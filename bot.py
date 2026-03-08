@@ -23,7 +23,7 @@ except ImportError:
     from discord.ext import commands
 
 # --- الإعدادات ---
-TOKEN = 'ضع_التوكن_هنا' 
+TOKEN = 'MTM2MTI2OTYxMTc0Nzc0MTcxNg.GC1mNa.O_CoXgy9IfDsoDCsXOrBXd6o3lx4hTmI7Zt4p0' 
 PREFIX = '!'
 LAST_ROOM_FILE = 'last_room.json'
 
