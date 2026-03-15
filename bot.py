@@ -28,12 +28,16 @@ PREFIX = '!'
 LAST_ROOM_FILE = 'last_room.json'
 
 bot = commands.Bot(command_prefix=PREFIX, self_bot=True, help_command=None)
+
+# إصلاح قراءة الأوامر
+bot.self_bot = True
+bot.message_content = True
+
 is_manual_stopping = False 
 
 @bot.event
 async def on_ready():
     print(f'✅ متصل: {bot.user}')
-    # الحالة 1: إعادة الاتصال عند تشغيل السكربت (Boot-Rejoin)
     if os.path.exists(LAST_ROOM_FILE):
         try:
             with open(LAST_ROOM_FILE, 'r') as f:
@@ -48,7 +52,6 @@ async def on_ready():
 async def on_voice_state_update(member, before, after):
     global is_manual_stopping
     if member.id == bot.user.id:
-        # الحالة 2: إعادة الاتصال عند الخروج المفاجئ (Auto-Rejoin)
         if before.channel and after.channel is None:
             if not is_manual_stopping:
                 print(f"⚠️ خروج مفاجئ.. محاولة العودة بعد 7 ثوانٍ.")
@@ -67,10 +70,10 @@ async def voice_join(ctx, arg: str):
     try:
         channel = await bot.fetch_channel(int(arg))
         await channel.connect(self_deaf=True, self_mute=True)
-        # حفظ المعرف في الذاكرة
         with open(LAST_ROOM_FILE, 'w') as f: json.dump({'channel_id': int(arg)}, f)
         await ctx.send(f"🎙️ دخلت: {channel.name}")
-    except Exception as e: await ctx.send(f"❌ خطأ: {e}")
+    except Exception as e:
+        await ctx.send(f"❌ خطأ: {e}")
 
 @bot.command(name='stop')
 async def voice_stop(ctx):
@@ -83,6 +86,7 @@ async def voice_stop(ctx):
     is_manual_stopping = False
 
 keep_alive()
+
 try:
     bot.run(TOKEN)
 except Exception as e:
